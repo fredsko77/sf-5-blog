@@ -1,0 +1,11 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    {% include "partials/navbar.html.twig" %}
+
+    <section class="container">
+        {% block content %}{% endblock %}
+    </section>
+
+{% endblock %}  

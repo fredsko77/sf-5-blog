@@ -1,0 +1,42 @@
+{% extends 'layouts/admin.html.twig' %}
+
+{% block content %}
+    <h1>Liste des utilisateurs</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>RegisteredAt</th>
+                <th>Confirm</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.firstname ~ ' ' ~ user.lastname }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>{{ user.registeredAt ? user.registeredAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ user.confirm ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('admin_user_edit', {'id': user.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="13">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('admin_user_create') }}">Create new</a>
+{% endblock %}
