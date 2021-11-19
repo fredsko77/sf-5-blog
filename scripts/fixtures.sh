@@ -16,9 +16,10 @@ fi
 if [[ ! -d migrations/ ]]; then  
     echo "Création du dossier `migrations`... "
     mkdir -p migrations/
-    echo "Création des fichiers de migrations... "
-    php bin/console make:migration -n 
 fi 
+
+echo "Création des fichiers de migrations... "
+php bin/console make:migration -n 
 
 echo "Création de la structure de la base de données... "
 php bin/console doctrine:migrations:migrate -n

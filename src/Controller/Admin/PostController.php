@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
+use App\Services\PostServicesInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,19 +23,30 @@ class PostController extends AbstractController
      */
     private $manager;
 
-    public function __construct(EntityManagerInterface $manager)
+    /**
+     * @var PostRepository $repository
+     */
+    private $repository;
+
+    /**
+     * @var PostServicesInterface $service
+     */
+    private $service;
+
+    public function __construct(EntityManagerInterface $manager, PostRepository $repository, PostServicesInterface $service)
     {
         $this->manager = $manager;
+        $this->repository = $repository;
+        $this->service = $service;
     }
 
     /**
      * @Route("", name="admin_post_index", methods={"GET"})
      */
-    public function index(PostRepository $postRepository): Response
+    public function index(Request $request): Response
     {
-        return $this->render('admin/post/index.html.twig', [
-            'posts' => $postRepository->findAll(),
-        ]);
+
+        return $this->render('admin/post/index.html.twig', ['posts' => $this->service->adminPost($request)]);
     }
 
     /**

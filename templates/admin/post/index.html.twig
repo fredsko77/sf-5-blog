@@ -1,17 +1,54 @@
 {% extends 'layouts/admin.html.twig' %}
 
+{% set options = {'': 'Trier par', 'desc': 'Les plus récents', 'asc': 'Les plus anciens'} %}
+{% set sortBy = app.request.get('sortBy') ?? ''  %}
+{% set states = {'': 'Filtrer par', 'in-writing': 'En attente', 'in-review': 'En relecture', 'published': 'Publié', 'archieved': 'Archivé'} %}
+{% set itemsNumberChoices = ['15', '25', '50'] %}
+{% set nbItems = app.request.get('items', '15') %}
+
 {% block content %}
-    <h1>Liste des articles</h1>
+
+    <h3>Liste des articles<a class="ms-2 btn btn-primary" href="{{ path('admin_post_create') }}">Create new</a></h3>
+
+    <div class="row justify-content-between mt-3 mb-2">
+        <div class="col-sm-7">
+            <div class="form-group">
+                <form id='search-form' action="" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" id="search" placeholder="Recherche" value="{{ app.request.get('search') }}">
+                        <button type="submit" class="input-group-text"><i class="bi bi-search"></i></button>
+                    </div>  
+                </form>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <select name="state" id="state" class="form-select">
+                    {% for key, state in states %}                        
+                        <option value="{{ key }}" {% if sortBy == key %}selected{% endif %}>{{ state }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <select name="sortBy" id="sortBy" class="form-select">
+                    {% for key, option in options %}                        
+                        <option value="{{ key }}" {% if sortBy != "" and sortBy['publishedAt'] == key %}selected{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Title</th>
-                <th>Summary</th>
-                <th>Etat</th>
-                <th>Image</th>
-                <th>Date de publication</th>
+                <th>Titre</th>
+                <th>Résumé</th>
+                <th>Status</th>
+                <th>Date </th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -22,7 +59,7 @@
                 <td>{{ post.title }}</td>
                 <td>{{ post.summary }}</td>
                 <td>{{ post.state }}</td>
-                <td>{{ post.publishedAt ? post.publishedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ post.publishedAt != null ? post.publishedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('admin_post_edit', {'id': post.id}) }}">edit</a>
                 </td>
@@ -35,5 +72,104 @@
         </tbody>
     </table>
 
-    <a href="{{ path('admin_post_create') }}">Create new</a>
+    <div class="row justify-content-between">
+        <div class="col-8" aria-label="User Navigation">
+            <div class="row">
+                {{ knp_pagination_render(posts) }}
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row g-3 justify-content-end align-items-end">
+                <div class="col-auto">
+                    <label for="itemsPerPage" class="form-label mb-0">Afficher</label>
+                </div>
+                <div class="col-auto">
+                    <select name="itemsPerPage" id="itemsPerPage" class="form-select">
+                        {% for choice in itemsNumberChoices %}
+                            <option value="{{ choice }}" {% if nbItems == choice %}selected{% endif %}>{{ choice }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">résultats</div>
+            </div>        
+        </div>
+    </div>
+
+    
+{% endblock %}
+
+{% block js %}
+    <script>
+        let sortBy = document.querySelector('#sortBy');
+        let nbItems = document.querySelector('#itemsPerPage');
+        const url = new URL(window.location);
+        const form = document.querySelector('#search-form');
+        const searchParams = url.searchParams;
+        const state = document.querySelector('#state');
+
+        state.addEventListener('change', (event) => {
+            event.preventDefault();
+
+            const state = event.target.value;
+            console.warn(state);
+
+            if (state !== '') {
+                searchParams.set('state', state);
+            } else {
+                searchParams.delete('state');
+            }
+
+            return window.location = url.href;
+        });
+
+        sortBy.addEventListener('change', (event) => {
+            event.preventDefault();
+
+            const criteria = event.target.value;
+            console.log(criteria)
+
+            if (criteria !== '') {
+                searchParams.set(`sortBy[publishedAt]`, criteria);
+            } else {
+                searchParams.delete(`sortBy[publishedAt]`);
+            }
+
+            return window.location = url.href;
+
+        });
+
+        nbItems.addEventListener('change', (event) => {
+            event.preventDefault();
+
+            const criteria = event.target.value;
+
+            searchParams.forEach((value, key) => searchParams.delete(key));
+
+            if (criteria !== '') {
+                searchParams.set(`items`, criteria);
+
+            } else {
+                searchParams.delete(`items`);
+            }
+
+            return window.location = url.href;
+
+        });
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            searchParams.forEach((value, key) => searchParams.delete(key));
+
+            let query = event.target.querySelector('#search').value;
+
+            if (query !== '') {
+                searchParams.set('search', query);
+            } else {
+                searchParams.delete(`search`);
+            }
+
+            return window.location = url.href;
+        });
+    </script>
 {% endblock %}

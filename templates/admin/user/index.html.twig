@@ -1,7 +1,37 @@
 {% extends 'layouts/admin.html.twig' %}
 
+{% set options = {'': 'Trier par', 'username': 'Nom d\'utilisateur', 'email': 'E-mail', 'registeredAt': 'Date d\'inscription'} %}
+{% set sortBy = app.request.get('sortBy') %}
+{% set itemsNumberChoices = ['15', '25', '50'] %}
+{% set nbItems = app.request.get('items', '15') %}
+
 {% block content %}
-    <h1>Liste des utilisateurs</h1>
+    <h1 class="h3">Liste des utilisateurs <a class="btn btn-primary" href="{{ path('admin_user_create') }}">Create new</a></h1>
+
+    <div class="row justify-content-between my-2">
+        <div class="col-sm-7">
+            <div class="form-group">
+                <form id='search-form' action="" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" id="search" placeholder="Recherche" value="{{ app.request.get('search') }}">
+                        <button type="submit" class="input-group-text"><i class="bi bi-search"></i></button>
+                    </div>  
+                </form>
+            </div>
+            {# <span>
+                {{ users.getTotalItemCount }} résultats
+            </span> #}
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <select name="sortBy" id="sortBy" class="form-select">
+                    {% for key, option in options %}                        
+                        <option value="{{ key }}" {% if sortBy == key %}selected{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
 
     <table class="table">
         <thead>
@@ -38,5 +68,33 @@
         </tbody>
     </table>
 
-    <a href="{{ path('admin_user_create') }}">Create new</a>
+    <div class="row justify-content-between">
+        <div class="col-8" aria-label="User Navigation">
+            <div class="row">
+                {{ knp_pagination_render(users) }}
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row g-3 justify-content-end align-items-end">
+                <div class="col-auto">
+                    <label for="itemsPerPage" class="form-label mb-0">Afficher</label>
+                </div>
+                <div class="col-auto">
+                    <select name="itemsPerPage" id="itemsPerPage" class="form-select">
+                        {% for choice in itemsNumberChoices %}
+                            <option value="{{ choice }}" {% if nbItems == choice %}selected{% endif %}>{{ choice }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">résultats</div>
+            </div>        
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+
+    <script src="{{ asset('js/admin/user.js') }}"></script>
+
 {% endblock %}

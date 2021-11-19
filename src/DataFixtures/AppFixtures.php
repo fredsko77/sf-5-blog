@@ -82,7 +82,7 @@ class AppFixtures extends Fixture
                 ->setUpdatedAt($ca % 3 ? null : $faker->dateTimeBetween('-300 days'))
             ;
 
-            for ($p = 0; $p < random_int(10, 70); $p++) {
+            for ($p = 0; $p < random_int(20, 70); $p++) {
                 $post = new Post;
 
                 $post->setTitle($faker->words(random_int(1, 4), true))
@@ -93,8 +93,7 @@ class AppFixtures extends Fixture
                     ->setCreatedAt((new DateTime)->modify('-' . random_int(1, 350) . ' days'))
                     ->setUpdatedAt($ca % 3 ? null : $faker->dateTimeBetween('-300 days'))
                     ->setAuthor($this->array_value($authors))
-                    ->setState($p % 7 ? 'published' : $this->array_value(['in-writing', 'pending', 'in-review']))
-                    ->setPublishedAt($post->getState() === 'published' ? $post->getUpdatedAt() : null)
+                    ->setState($p % 7 ? 'published' : $this->array_value(['in-writing', 'archieved', 'in-review']))
                 ;
 
                 if ($post->getState() === 'published') {
@@ -117,7 +116,13 @@ class AppFixtures extends Fixture
 
                         $comment->setState($state);
 
-                        $post->addComment($comment);
+                        for ($l = 0; $l < random_int(0, 10); $l++) {
+                            $post->addLike($this->array_value($users));
+                        }
+
+                        $post->setPublishedAt($post->getUpdatedAt())
+                            ->addComment($comment)
+                        ;
 
                     }
                 }

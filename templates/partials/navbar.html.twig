@@ -1,23 +1,26 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Navbar w/ text</a>
+        <a class="navbar-brand" href="{{ path('app_default') }}">Mon super blog</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    <a class="nav-link" href="{{ path('admin_user_index') }}">Utilisateurs</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Features</a>
+                    <a class="nav-link" href="{{ path('admin_category_index') }}">Catégories</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Pricing</a>
+                    <a class="nav-link" href="{{ path('admin_post_index') }}">Articles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('admin_comment_index') }}">Commentaires</a>
                 </li>
             </ul>
             <span class="navbar-text">
-                Navbar text with an inline element
+                <a href="#">Déconnexion</a>    
             </span>
         </div>
     </div>

@@ -36,32 +36,55 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
+    /**
+     * @param string|null $search
+     * @param int $page
+     * @param int $itemsPerPage
+     * @param array|null $sortBy
+     *
+     * @return null|User[]
+     */
+    public function adminUser(?string $search = null, ?string $sortBy = null)
+    {
+        $query = $this->createQueryBuilder('u');
+
+        if ($search !== null) {
+            $query->where('MATCH_AGAINST(u.email, u.firstname, u.lastname, u.username)AGAINST(:search boolean)>0')
+                ->setParameter(':search', $search)
+            ;
+        }
+
+        $query->orderBy('u.' . $sortBy ?? 'id');
+
+        return $query->getQuery();
+    }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */
     /*
     public function findByExampleField($value)
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+    return $this->createQueryBuilder('u')
+    ->andWhere('u.exampleField = :val')
+    ->setParameter('val', $value)
+    ->orderBy('u.id', 'ASC')
+    ->setMaxResults(10)
+    ->getQuery()
+    ->getResult()
+    ;
     }
-    */
+     */
 
     /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
+public function findOneBySomeField($value): ?User
+{
+return $this->createQueryBuilder('u')
+->andWhere('u.exampleField = :val')
+->setParameter('val', $value)
+->getQuery()
+->getOneOrNullResult()
+;
+}
+ */
 }

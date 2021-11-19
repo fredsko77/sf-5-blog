@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
  * @UniqueEntity("name")
+ * @ORM\Table(name="`category`", indexes={@ORM\Index(columns={"name", "description"}, flags={"fulltext"})})
  */
 class Category
 {

@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\Table(name="`user`", indexes={@ORM\Index(columns={"firstname", "email", "username", "lastname"}, flags={"fulltext"})})
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -87,10 +88,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $comments;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Post::class, mappedBy="likes", cascade={"persist", "remove"})
+     */
+    private $likedPosts;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->likedPosts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -331,6 +338,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($comment->getAuthor() === $this) {
                 $comment->setAuthor(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Post[]
+     */
+    public function getLikedPosts(): Collection
+    {
+        return $this->likedPosts;
+    }
+
+    public function addLikedPost(Post $likedPost): self
+    {
+        if (!$this->likedPosts->contains($likedPost)) {
+            $this->likedPosts[] = $likedPost;
+            $likedPost->addLike($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLikedPost(Post $likedPost): self
+    {
+        if ($this->likedPosts->removeElement($likedPost)) {
+            $likedPost->removeLike($this);
         }
 
         return $this;

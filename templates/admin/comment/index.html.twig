@@ -1,5 +1,8 @@
 {% extends 'layouts/admin.html.twig' %}
 
+{% set itemsNumberChoices = ['15', '25', '50'] %}
+{% set nbItems = app.request.get('items', '15') %}
+
 {% block content %}
     <h1>Liste des commentaires</h1>
 
@@ -33,5 +36,55 @@
         {% endfor %}
         </tbody>
     </table>
+    
+    <div class="row justify-content-between">
+        <div class="col-8" aria-label="User Navigation">
+            <div class="row">
+                {{ knp_pagination_render(comments) }}
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row g-3 justify-content-end align-items-end">
+                <div class="col-auto">
+                    <label for="itemsPerPage" class="form-label mb-0">Afficher</label>
+                </div>
+                <div class="col-auto">
+                    <select name="itemsPerPage" id="itemsPerPage" class="form-select">
+                        {% for choice in itemsNumberChoices %}
+                            <option value="{{ choice }}" {% if nbItems == choice %}selected{% endif %}>{{ choice }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">résultats</div>
+            </div>        
+        </div>
+    </div>
 
+{% endblock %}
+
+{% block js %}
+    <script>
+        let nbItems = document.querySelector('#itemsPerPage');
+        const url = new URL(window.location);
+        const searchParams = url.searchParams;
+
+        nbItems.addEventListener('change', (event) => {
+            event.preventDefault();
+
+            const criteria = event.target.value;
+
+            searchParams.forEach((value, key) => searchParams.delete(key));
+
+            if (criteria !== '') {
+                searchParams.set(`items`, criteria);
+
+            } else {
+                searchParams.delete(`items`);
+            }
+
+            return window.location = url.href;
+
+        });
+
+    </script>
 {% endblock %}
