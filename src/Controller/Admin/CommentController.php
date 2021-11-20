@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/admin/comment")
+ * @Route("/admin/comment", name="admin_comment_")
  */
 class CommentController extends AbstractController
 {
@@ -34,7 +34,7 @@ class CommentController extends AbstractController
     }
 
     /**
-     * @Route("", name="admin_comment_index", methods={"GET"})
+     * @Route("", name="index", methods={"GET"})
      */
     public function index(Request $request): Response
     {
@@ -44,7 +44,7 @@ class CommentController extends AbstractController
     }
 
     /**
-     * @Route("/create", name="admin_comment_create", methods={"GET","POST"})
+     * @Route("/create", name="create", methods={"GET","POST"})
      */
     public function create(Request $request): Response
     {
@@ -67,7 +67,7 @@ class CommentController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/edit", name="admin_comment_edit", methods={"GET","POST"})
+     * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
     public function edit(Request $request, Comment $comment): Response
     {
@@ -87,7 +87,7 @@ class CommentController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="admin_comment_delete", methods={"POST"})
+     * @Route("/{id}", name="delete", methods={"POST"})
      */
     public function delete(Request $request, Comment $comment): Response
     {

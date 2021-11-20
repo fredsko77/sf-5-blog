@@ -6,12 +6,16 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`", indexes={@ORM\Index(columns={"firstname", "email", "username", "lastname"}, flags={"fulltext"})})
+ * @UniqueEntity(fields={"email"}, message="Cette adresse e-mail est utilisée !")
+ * @UniqueEntity(fields={"username"}, message="Ce nom d'utilisateur est utilisée !")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -24,6 +28,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\Email(message="Cette adresse e-mail n'est pas valide !")
+     * @Assert\NotBlank(message="Ce champs est obligatoire !")
      */
     private $email;
 
@@ -40,6 +46,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank(message="Ce champs est obligatoire !")
+     * @Assert\Length(min=2, minMessage="Le nom d'utilisateur doit faire au moins 2 caractères !")
      */
     private $username;
 
@@ -55,6 +63,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Regex(
+     *  pattern="#^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]){8,}#",
+     *  match="true",
+     *  message="Le mot de passe doit contenir au moins une masjuscule, une minuscule et un chiffre avec au moins 8 caractères !"
+     * )
+     * @Assert\NotBlank(message="Le mot de passe est obligatoire !", allowNull=true)
      */
     private $token;
 
@@ -70,11 +84,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=150, nullable=true)
+     * @Assert\NotBlank(message="Ce champs est obligatoire !", allowNull=true)
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=150, nullable=true)
+     * @Assert\NotBlank(message="Ce champs est obligatoire !", allowNull=true)
      */
     private $lastname;
 
