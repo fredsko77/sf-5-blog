@@ -54,8 +54,16 @@ class PostController extends AbstractController
         $this->service = $service;
         $this->filesystem = new Filesystem;
         $this->slugger = new Slugify;
-        $this->rootDir = $this->getParameter('root_directory');
-        $this->postDir = $this->getParameter('post_directory');
+    }
+
+    private function getPostDir()
+    {
+        return $this->getParameter('post_directory');
+    }
+
+    private function getRootDir()
+    {
+        return $this->getParameter('root_directory');
     }
 
     /**
@@ -86,7 +94,7 @@ class PostController extends AbstractController
                 $filename = md5(uniqid()) . '.' . $image->guessExtension();
 
                 $image->move(
-                    $this->postDir,
+                    $this->getPostDir(),
                     $filename
                 );
 
@@ -128,13 +136,13 @@ class PostController extends AbstractController
                 $filename = md5(uniqid()) . '.' . $image->guessExtension();
 
                 $image->move(
-                    $this->postDir,
+                    $this->getPostDir(),
                     $filename
                 );
 
                 if ($currentImage !== null) {
-                    if ($this->filesystem->exists($this->rootDir . $currentImage)) {
-                        $this->filesystem->remove($this->rootDir . $currentImage);
+                    if ($this->filesystem->exists($this->getRootDir() . $currentImage)) {
+                        $this->filesystem->remove($this->getRootDir() . $currentImage);
                     }
                 }
 
