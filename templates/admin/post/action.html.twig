@@ -1,0 +1,14 @@
+{% extends 'layouts/admin.html.twig' %}
+
+{% block content %}
+    <h1 class="h3">{{ action == 'edit' ? 'Modifier l\'article' : 'Ecrire un article' }}</h1>
+
+    <a href="{{ path('admin_post_index') }}">Revenir aux articles</a>
+
+    {% include 'admin/post/_form.html.twig' %}
+    
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ asset('css/admin/post.css') }}">
+{% endblock %}

@@ -1,4 +1,125 @@
 {{ form_start(form) }}
+    <div class="row">
+        <div class="col-8">
+            {{ form_row(form.title) }}
+            {{ form_row(form.slug) }}
+            {{ form_row(form.content, {'attr': {'rows': 20}}) }}
+        </div>
+        <div class="col-4">
+            <div class="accordion" id="accordionPublishStayOpen">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="accordion-publish">
+                        <button 
+                            class="accordion-button" 
+                            type="button" 
+                            aria-expanded="true" 
+                        >Publier</button>
+                    </h2>
+                    <div id="accordionPublish" class="accordion-collapse collapse show" aria-labelledby="accordion-publish">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <label class="col-form-label col-3" for="post_state">Statut</label>
+                                <div class="col-9 mb-2">
+                                    {{ form_widget(form.state, {label: false}) }}
+                                </div>
+                            </div>
+                            {% if post.publishedAt != null %}
+                                <small class="">Publié le {{ post.publishedAt|date("%d%le %D% %m% %Y%") }}</small>
+                            {% else %} 
+                                <small class="">Dernière modification le {{ (post.updatedAt ?? post.createdAt)|date("F jS Y", "Europe/Paris") }}</small>
+                            {% endif %}
+                            {% if action == 'edit' %}
+                                <a href="#" target="_blank" class="link">Prévisualiser l'article</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3 mb-5 justify-content-{{ action == 'edit' ? 'center' : 'between' }}">
+                <div class="col-6">
+                    {% if action == 'edit' %}
+                        <a href="#" class="delete-link col-12">Déplacer vers la corbeille</a>
+                    {% endif %}
+                </div>
+                <div class="col-6">
+                        <button type="submit" class="btn btn-primary col-12">{{ action == 'edit' ? 'Mettre à jour' : 'Enregistrer' }}</button>
+                </div>
+            </div>
+
+            <div class="accordion" id="accordion-post">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="accordion-image">
+                        <button 
+                            class="accordion-button collapsed" 
+                            type="button" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#accordionImage" 
+                            aria-expanded="true" 
+                            aria-controls="accordionImage"
+                        >Image</button>
+                    </h2>
+                    <div id="accordionImage" class="accordion-collapse collapse" aria-labelledby="accordion-image">
+                        <div class="accordion-body">
+                            {% if post.image != null %}
+                                <label for="post_uploadedFile">
+                                    <img 
+                                        src="{{ asset(post.image) }}" 
+                                        alt="Photo" 
+                                        srcset="{{ asset(post.image) }}"
+                                        id="post-form-image"
+                                        class="post-form-image"
+                                    >
+                                </label>
+                            {% endif %}
+                            {{ form_widget(form.uploadedFile, {'label': false}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="accordion-summary">
+                        <button 
+                            class="accordion-button collapsed" 
+                            type="button" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#accordionSummary" 
+                            aria-expanded="false" 
+                            aria-controls="accordionSummary"
+                        >Résumé</button>
+                    </h2>
+                    <div id="accordionSummary" class="accordion-collapse collapse" aria-labelledby="accordion-summary">
+                        <div class="accordion-body">
+                            {{ form_row(form.summary, {'label': false, 'attr': {'rows': 4}}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="accordion-category">
+                        <button 
+                            class="accordion-button collapsed" 
+                            type="button" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#accordionCategory" 
+                            aria-expanded="false" 
+                            aria-controls="accordionCategory"
+                        >Catégorie</button>
+                    </h2>
+                    <div id="accordionCategory" class="accordion-collapse collapse" aria-labelledby="accordion-category">
+                        <div class="accordion-body">
+                            {{ form_row(form.category, {'label': false}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-2 row justify-content-end">
+                <div class="col-auto">
+                    {# {% if action == 'edit' %}
+                        {{ include('admin/post/_delete_form.html.twig') }}
+                    {% endif %} #}
+                </div>
+            </div>
+        </div>
+    </div>
     {{ form_widget(form) }}
-    <button class="btn btn-primary">Enregistrer</button>
+    
 {{ form_end(form) }}

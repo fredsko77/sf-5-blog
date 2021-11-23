@@ -85,6 +85,15 @@ class Post
      */
     private $likes;
 
+    public const STATE_DRAFTED = 'drafted';
+    public const STATE_IN_REVIEW = 'review';
+    public const STATE_IN_ARCHIEVED = 'archieved';
+    public const STATE_PUBLISHED = 'published';
+    public const STATE_TRASHED = 'trashed';
+
+    public const VISIBILITY_PUBLIC = 'public';
+    public const VISIBILITY_PRIVATE = 'private';
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -280,5 +289,30 @@ class Post
         $this->likes->removeElement($like);
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getListStates(): array
+    {
+        return [
+            'En brouillon' => self::STATE_DRAFTED,
+            'En relecture' => self::STATE_IN_REVIEW,
+            'Archiver' => self::STATE_IN_ARCHIEVED,
+            'Publié' => self::STATE_PUBLISHED,
+            'En corbeille' => self::STATE_TRASHED,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getListVisibilities(): array
+    {
+        return [
+            'Privée' => self::VISIBILITY_PRIVATE,
+            'Publique' => self::VISIBILITY_PUBLIC,
+        ];
     }
 }

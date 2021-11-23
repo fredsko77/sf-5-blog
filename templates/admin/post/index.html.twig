@@ -2,7 +2,7 @@
 
 {% set options = {'': 'Trier par', 'desc': 'Les plus récents', 'asc': 'Les plus anciens'} %}
 {% set sortBy = app.request.get('sortBy') ?? ''  %}
-{% set states = {'': 'Filtrer par', 'in-writing': 'En attente', 'in-review': 'En relecture', 'published': 'Publié', 'archieved': 'Archivé'} %}
+{% set states = {'': 'Filtrer par', 'in-writing': 'En écriture', 'in-review': 'En relecture', 'published': 'Publié', 'archieved': 'Archivé'} %}
 {% set itemsNumberChoices = ['15', '25', '50'] %}
 {% set nbItems = app.request.get('items', '15') %}
 

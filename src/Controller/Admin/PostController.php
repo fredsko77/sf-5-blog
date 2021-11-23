@@ -6,8 +6,12 @@ use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use App\Services\PostServicesInterface;
+use Cocur\Slugify\Slugify;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,11 +37,25 @@ class PostController extends AbstractController
      */
     private $service;
 
+    /**
+     * @var Filesystem $filesystem
+     */
+    private $filesystem;
+
+    /**
+     * @var Slugify $slugger
+     */
+    private $slugger;
+
     public function __construct(EntityManagerInterface $manager, PostRepository $repository, PostServicesInterface $service)
     {
         $this->manager = $manager;
         $this->repository = $repository;
         $this->service = $service;
+        $this->filesystem = new Filesystem;
+        $this->slugger = new Slugify;
+        $this->rootDir = $this->getParameter('root_directory');
+        $this->postDir = $this->getParameter('post_directory');
     }
 
     /**
@@ -59,15 +77,34 @@ class PostController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $image = $form->get('uploadedFile')->getData();
+            $post->setUpdatedAt(new DateTime)
+                ->setSlug($post->getSlug() ?? $this->slugger->slugify($post->getTitle()))
+            ;
+
+            if ($image instanceof UploadedFile) {
+                $filename = md5(uniqid()) . '.' . $image->guessExtension();
+
+                $image->move(
+                    $this->postDir,
+                    $filename
+                );
+
+                $post->setImage('/uploads/posts/' . $filename);
+            }
+
             $this->manager->persist($post);
             $this->manager->flush();
 
-            return $this->redirectToRoute('admin_post_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('admin_post_edit', [
+                'id' => $post->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('admin/post/create.html.twig', [
+        return $this->renderForm('admin/post/action.html.twig', [
             'post' => $post,
             'form' => $form,
+            'action' => 'create',
         ]);
     }
 
@@ -80,14 +117,41 @@ class PostController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $image = $form->get('uploadedFile')->getData();
+            $post->setUpdatedAt(new DateTime)
+                ->setSlug($post->getSlug() ?? $this->slugger->slugify($post->getTitle()))
+            ;
 
-            return $this->redirectToRoute('admin_post_index', [], Response::HTTP_SEE_OTHER);
+            $currentImage = $post->getImage();
+
+            if ($image instanceof UploadedFile) {
+                $filename = md5(uniqid()) . '.' . $image->guessExtension();
+
+                $image->move(
+                    $this->postDir,
+                    $filename
+                );
+
+                if ($currentImage !== null) {
+                    if ($this->filesystem->exists($this->rootDir . $currentImage)) {
+                        $this->filesystem->remove($this->rootDir . $currentImage);
+                    }
+                }
+
+                $post->setImage('/uploads/posts/' . $filename);
+            }
+
+            $this->manager->flush();
+
+            return $this->redirectToRoute('admin_post_edit', [
+                'id' => $post->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('admin/post/edit.html.twig', [
+        return $this->renderForm('admin/post/action.html.twig', [
             'post' => $post,
             'form' => $form,
+            'action' => 'edit',
         ]);
     }
 

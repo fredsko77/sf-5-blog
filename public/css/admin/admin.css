@@ -1,0 +1,12 @@
+.delete-link {
+    color: var(--bs-danger);
+    text-decoration: underline;
+    font-weight: 600;
+    font-size: 1.05rem;
+    display: block;
+}
+
+.delete-link:hover {
+    cursor: pointer;
+    color: var(--bs-danger);
+}
