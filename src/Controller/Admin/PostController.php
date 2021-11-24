@@ -156,9 +156,9 @@ class PostController extends AbstractController
             ], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('admin/post/action.html.twig', [
+        return $this->render('admin/post/action.html.twig', [
             'post' => $post,
-            'form' => $form,
+            'form' => $form->createView(),
             'action' => 'edit',
         ]);
     }

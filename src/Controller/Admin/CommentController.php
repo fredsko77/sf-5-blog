@@ -3,9 +3,9 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Comment;
-use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use App\Services\CommentServicesInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,10 +27,16 @@ class CommentController extends AbstractController
      */
     private $service;
 
-    public function __construct(CommentRepository $repository, CommentServicesInterface $service)
+    /**
+     * @var EntityManagerInterface $manager
+     */
+    private $manager;
+
+    public function __construct(CommentRepository $repository, CommentServicesInterface $service, EntityManagerInterface $manager)
     {
         $this->repository = $repository;
         $this->service = $service;
+        $this->manager = $manager;
     }
 
     /**
@@ -44,58 +50,12 @@ class CommentController extends AbstractController
     }
 
     /**
-     * @Route("/create", name="create", methods={"GET","POST"})
+     * @Route("/{id}", name="delete", methods={"GET"})
      */
-    public function create(Request $request): Response
+    public function delete(Comment $comment): Response
     {
-        $comment = new Comment();
-        $form = $this->createForm(CommentType::class, $comment);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($comment);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('admin_comment_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('admin/comment/create.html.twig', [
-            'comment' => $comment,
-            'form' => $form,
-        ]);
-    }
-
-    /**
-     * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
-     */
-    public function edit(Request $request, Comment $comment): Response
-    {
-        $form = $this->createForm(CommentType::class, $comment);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('admin_comment_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('admin/comment/edit.html.twig', [
-            'comment' => $comment,
-            'form' => $form,
-        ]);
-    }
-
-    /**
-     * @Route("/{id}", name="delete", methods={"POST"})
-     */
-    public function delete(Request $request, Comment $comment): Response
-    {
-        if ($this->isCsrfTokenValid('delete' . $comment->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($comment);
-            $entityManager->flush();
-        }
+        $this->manager->remove($comment);
+        $this->manager->flush();
 
         return $this->redirectToRoute('admin_comment_index', [], Response::HTTP_SEE_OTHER);
     }

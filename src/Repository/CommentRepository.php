@@ -23,7 +23,7 @@ class CommentRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.flag > 0')
-            ->orderBy('c.id', 'ASC')
+            ->orderBy('c.flag', 'DESC')
             ->getQuery()
         ;
     }
