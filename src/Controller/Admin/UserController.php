@@ -69,7 +69,7 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $roles = count($user->getRoles()) === 0 ? ['ROLE_USER'] : $user->getRoles();
             $user->setRegisteredAt(new DateTime)
-                ->setPassword($hasher->hashPassword($user, $user->getPassword()))
+                ->setPassword($hasher->hashPassword($user, 'password'))
                 ->setConfirm(true)
                 ->setRoles($roles)
                 ->setIdentifier()
