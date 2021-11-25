@@ -27,7 +27,7 @@ class PostController extends AbstractController
      * @Route(
      *  "/{id}-{slug}",
      *  name="show",
-     *  requirements={"id": "\+", "slug": "[a-z0-9\-]+"},
+     *  requirements={"id": "\d+", "slug": "[a-z0-9\-]+"},
      *  methods={"GET"}
      * )
      */
@@ -35,8 +35,8 @@ class PostController extends AbstractController
     {
         $post = $this->repository->find($id);
 
-        // TODO gestion des erreurs 404
-        // TODO voter pour vérifier si l'utilisateur a le droit d'accéder à cet article
+        // TODO: gestion des erreurs 404
+        // TODO: voter pour vérifier si l'utilisateur a le droit d'accéder à cet article
 
         if ($post->getSlug() !== $slug) {
             return $this->redirectToRoute('blog_post_show', [

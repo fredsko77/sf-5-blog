@@ -109,6 +109,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $likedPosts;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $identifier;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $biography;
+
+    public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_AUTHOR = 'ROLE_AUTHOR';
+    public const ROLE_EDITOR = 'ROLE_EDITOR';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -382,6 +397,68 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->likedPosts->removeElement($likedPost)) {
             $likedPost->removeLike($this);
         }
+
+        return $this;
+    }
+
+    public function getIdentifier(): ?string
+    {
+        return $this->identifier;
+    }
+
+    public function setIdentifier(): self
+    {
+        if ($this->firstname !== null && $this->lastname !== null) {
+            $identifier = $this->firstname . '-' . $this->lastname;
+        } else {
+            $identifier = $this->username;
+        }
+
+        $this->identifier = strtolower($this->skipAccents($identifier) . '-' . (string) random_int(1000, 5000000));
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public static function listRoles(): array
+    {
+        return [
+            'Utilisateur' => self::ROLE_USER,
+            'Auteur' => self::ROLE_AUTHOR,
+            'Editeur' => self::ROLE_EDITOR,
+            'Administrateur' => self::ROLE_ADMIN,
+        ];
+    }
+
+    /**
+     * Skip accents in string
+     * @param string $str
+     * @param string $charset
+     * @return string
+     */
+    public function skipAccents(string $str, string $charset = 'utf-8'): string
+    {
+        $str = trim($str);
+        $str = htmlentities($str, ENT_NOQUOTES, $charset);
+
+        $str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+        $str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str);
+        $str = preg_replace('#&[^;]+;#', '', $str);
+        $str = preg_replace('/[^A-Za-z0-9\-]/', ' ', $str);
+
+        return $str;
+    }
+
+    public function getBiography(): ?string
+    {
+        return $this->biography;
+    }
+
+    public function setBiography(?string $biography): self
+    {
+        $this->biography = $biography;
 
         return $this;
     }

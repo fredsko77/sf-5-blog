@@ -29,7 +29,7 @@
                                 <small class="">Dernière modification le {{ (post.updatedAt ?? post.createdAt)|date("F jS Y", "Europe/Paris") }}</small>
                             {% endif %}
                             {% if action == 'edit' %}
-                                <a href="#" target="_blank" class="link">Prévisualiser l'article</a>
+                                <a href="{{ path('blog_post_show', {id: post.id, slug: post.slug}) }}" target="_blank" class="link">Prévisualiser l'article</a>
                             {% endif %}
                         </div>
                     </div>

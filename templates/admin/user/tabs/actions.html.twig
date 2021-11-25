@@ -1,0 +1,29 @@
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="col mb-2">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Réinitialisation de mot de passe</h5>
+                <p class="card-text">Cette action envoie un e-mail avec un jeton qui permettra à l'utilisateur de modifier son mot de passe.</p>
+                <a href="#" title="Envoyer le jeton de réinitialisation à l'utilisateur !! action pas encore créée !!" class="btn btn-primary">Envoyer un jeton</a>
+            </div>
+        </div>
+    </div>
+    <div class="col mb-2">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Supprimer le profil</h5>
+                <p class="card-text">Cette action entrainera une suppression définitive de l'utilisateur.</p>
+                {% include 'admin/user/_delete_form.html.twig' %}
+            </div>
+        </div>
+    </div>
+    <div class="col mb-2">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Contacter l'utilisateur</h5>
+                <p class="card-text">Envoyer un petit message à l'utilisateur !</p>
+                <a href="#" title="Envoyer un message à l'utilisateur !! action pas encore créée !!" class="btn btn-primary">Envoyer un message</a>
+            </div>
+        </div>
+    </div>
+</div>

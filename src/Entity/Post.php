@@ -85,6 +85,11 @@ class Post
      */
     private $likes;
 
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $visibility;
+
     public const STATE_DRAFTED = 'drafted';
     public const STATE_IN_REVIEW = 'review';
     public const STATE_IN_ARCHIEVED = 'archieved';
@@ -314,5 +319,17 @@ class Post
             'Privée' => self::VISIBILITY_PRIVATE,
             'Publique' => self::VISIBILITY_PUBLIC,
         ];
+    }
+
+    public function getVisibility(): ?string
+    {
+        return $this->visibility;
+    }
+
+    public function setVisibility(?string $visibility): self
+    {
+        $this->visibility = $visibility;
+
+        return $this;
     }
 }

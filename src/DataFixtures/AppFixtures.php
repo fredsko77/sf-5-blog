@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Category;
 use App\Entity\Comment;
+use App\Entity\Contact;
 use App\Entity\Post;
 use App\Entity\User;
 use Cocur\Slugify\Slugify;
@@ -93,7 +94,7 @@ class AppFixtures extends Fixture
                     ->setCreatedAt((new DateTime)->modify('-' . random_int(1, 350) . ' days'))
                     ->setUpdatedAt($ca % 3 ? null : $faker->dateTimeBetween('-300 days'))
                     ->setAuthor($this->array_value($authors))
-                    ->setState($p % 7 ? 'published' : $this->array_value(['in-writing', 'archieved', 'in-review']))
+                    ->setState($p % 7 ? Post::STATE_PUBLISHED : $this->array_value([Post::STATE_DRAFTED, Post::STATE_IN_ARCHIEVED, Post::STATE_IN_REVIEW, Post::STATE_TRASHED]))
                 ;
 
                 if ($post->getState() === 'published') {
@@ -133,6 +134,21 @@ class AppFixtures extends Fixture
             $manager->persist($category);
         }
 
+        for ($co = 0; $co < random_int(40, 100); $co++) {
+            $contact = new Contact;
+
+            $contact->setName($faker->name)
+                ->setEmail($faker->email)
+                ->setSubject($faker->words(random_int(1, 4), true))
+                ->setMessage($faker->paragraphs(random_int(1, 3), true))
+                ->setCreatedAt($faker->dateTimeBetween('-6 months'))
+                ->setState($faker->randomElement([Contact::STATE_NOT_REPLIED, Contact::STATE_REPLIED, Contact::STATE_OPENED]))
+                ->setUpdatedAt($contact->getState() === Contact::STATE_NOT_REPLIED ? null : $faker->dateTimeBetween('-6 months'))
+            ;
+
+            $manager->persist($contact);
+        }
+
         $manager->flush();
     }
 
@@ -148,6 +164,7 @@ class AppFixtures extends Fixture
             ->setRegisteredAt((new DateTime)->modify('-' . random_int(1, 400) . ' days'))
             ->setConfirm(true)
             ->setUpdatedAt($faker->dateTimeBetween('-300 days'))
+            ->setIdentifier()
         ;
     }
 

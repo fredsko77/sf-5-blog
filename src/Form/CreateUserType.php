@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -48,6 +49,13 @@ class CreateUserType extends AbstractType
 
                     new NotBlank([], 'Ce champ est obligatoire !')
                 ],
+            ])
+            ->add('roles', ChoiceType::class, [
+                'label' => 'Roles',
+                'required' => false,
+                'choices' => User::listRoles(),
+                'expanded' => true,
+                'multiple' => true,
             ])
         ;
     }

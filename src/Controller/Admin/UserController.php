@@ -3,7 +3,9 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use App\Form\Admin\EditUserType;
 use App\Form\CreateUserType;
+use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use App\Services\UserServicesInterface;
 use DateTime;
@@ -26,6 +28,11 @@ class UserController extends AbstractController
     private $repository;
 
     /**
+     * @var PostRepository $postRepository
+     */
+    private $postRepository;
+
+    /**
      * @var UserServicesInterface $service
      */
     private $service;
@@ -34,11 +41,12 @@ class UserController extends AbstractController
      * @var EntityManagerInterface $manager
      */
 
-    public function __construct(UserRepository $repository, UserServicesInterface $service, EntityManagerInterface $manager)
+    public function __construct(UserRepository $repository, PostRepository $postRepository, UserServicesInterface $service, EntityManagerInterface $manager)
     {
         $this->repository = $repository;
         $this->service = $service;
         $this->manager = $manager;
+        $this->postRepository = $postRepository;
     }
 
     /**
@@ -59,16 +67,20 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $roles = count($user->getRoles()) === 0 ? ['ROLE_USER'] : $user->getRoles();
             $user->setRegisteredAt(new DateTime)
                 ->setPassword($hasher->hashPassword($user, $user->getPassword()))
-                ->setRoles(['ROLE_USER'])
                 ->setConfirm(true)
+                ->setRoles($roles)
+                ->setIdentifier()
             ;
 
             $this->manager->persist($user);
             $this->manager->flush();
 
-            return $this->redirectToRoute('admin_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('admin_user_edit', [
+                'id' => $user->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('admin/user/create.html.twig', [
@@ -82,18 +94,23 @@ class UserController extends AbstractController
      */
     public function edit(Request $request, User $user): Response
     {
-        // $form = $this->createForm(UserType::class, $user);
-        // $form->handleRequest($request);
+        $form = $this->createForm(EditUserType::class, $user);
+        $form->handleRequest($request);
 
-        // if ($form->isSubmitted() && $form->isValid()) {
-        //     $this->getDoctrine()->getManager()->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
 
-        //     return $this->redirectToRoute('admin_user_index', [], Response::HTTP_SEE_OTHER);
-        // }
+            return $this->redirectToRoute('admin_user_edit', [
+                'id' => $user->getId(),
+            ], Response::HTTP_SEE_OTHER);
+        }
+
+        $posts = $this->postRepository->findBy(['author' => $user], null, 5, 0);
 
         return $this->renderForm('admin/user/edit.html.twig', [
             'user' => $user,
-            // 'form' => $form,
+            'posts' => $posts,
+            'form' => $form,
         ]);
     }
 
