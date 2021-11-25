@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\CreateUserType;
+use App\Form\RegistrationType;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,9 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/register", name="register")
- */
 class RegisterController extends AbstractController
 {
 
@@ -29,12 +26,12 @@ class RegisterController extends AbstractController
     }
 
     /**
-     * @Route("", name="")
+     * @Route("/register", name="register")
      */
     public function index(UserPasswordHasherInterface $hasher, Request $request): Response
     {
         $user = new User;
-        $form = $this->createForm(CreateUserType::class, $user);
+        $form = $this->createForm(RegistrationType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

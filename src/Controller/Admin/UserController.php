@@ -3,8 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use App\Form\Admin\CreateUserType;
 use App\Form\Admin\EditUserType;
-use App\Form\CreateUserType;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use App\Services\UserServicesInterface;

@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Post;
-use App\Form\PostType;
+use App\Form\Admin\PostType;
 use App\Repository\PostRepository;
 use App\Services\PostServicesInterface;
 use Cocur\Slugify\Slugify;
