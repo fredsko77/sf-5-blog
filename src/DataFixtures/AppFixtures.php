@@ -95,6 +95,7 @@ class AppFixtures extends Fixture
                     ->setUpdatedAt($ca % 3 ? null : $faker->dateTimeBetween('-300 days'))
                     ->setAuthor($this->array_value($authors))
                     ->setState($p % 7 ? Post::STATE_PUBLISHED : $this->array_value([Post::STATE_DRAFTED, Post::STATE_IN_ARCHIEVED, Post::STATE_IN_REVIEW, Post::STATE_TRASHED]))
+                    ->setVisibility($p % 15 ? Post::VISIBILITY_PUBLIC : Post::VISIBILITY_PRIVATE)
                 ;
 
                 if ($post->getState() === 'published') {

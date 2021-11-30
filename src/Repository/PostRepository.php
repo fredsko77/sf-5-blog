@@ -50,6 +50,45 @@ class PostRepository extends ServiceEntityRepository
         return $query->getQuery();
     }
 
+    /**
+     * Latest posts for Homepage
+     * @return null|Post[] Returns an array of Post objects or null
+     */
+    public function latest()
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.state = :state')
+            ->andWhere('p.visibility <> :visibility')
+            ->setParameter(':state', Post::STATE_PUBLISHED)
+            ->setParameter(':visibility', Post::VISIBILITY_PRIVATE)
+            ->orderBy('p.updatedAt', 'DESC')
+            ->setFirstResult(0)
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return null|Post[] Returns an array of Posts or null
+     */
+    public function related(Post $post)
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.state = ' . Post::STATE_PUBLISHED)
+            ->andWhere('p.visibility <> ' . Post::VISIBILITY_PRIVATE)
+            ->andWhere('p.category = ' . $post->getCategory())
+            ->andWhere('p.id <> ' . $post->getId())
+            ->orderBy('p.updatedAt', 'DESC')
+            ->setFirstResult(0)
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return Post[] Returns an array of Post objects
     //  */
